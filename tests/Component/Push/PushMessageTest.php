@@ -62,16 +62,55 @@ class PushMessageTest extends TestCase
     }
 
     /**
-     * @тест настроек Push: get/set
+     * @тест наличия ключа sound в дефолтных настройках Push
      */
-    public function testGetAndSetPushSettings(): void
+    public function testDefaultPushSettingsHasSound(): void
     {
         $defaults = $this->message->getPushSettings();
         $this->assertArrayHasKey('sound', $defaults);
-        $this->assertArrayHasKey('badge', $defaults);
-        $this->assertArrayHasKey('priority', $defaults);
-        $this->assertArrayHasKey('ttl', $defaults);
+    }
 
+    /**
+     * @тест наличия ключа badge в дефолтных настройках Push
+     */
+    public function testDefaultPushSettingsHasBadge(): void
+    {
+        $defaults = $this->message->getPushSettings();
+        $this->assertArrayHasKey('badge', $defaults);
+    }
+
+    /**
+     * @тест наличия ключа priority в дефолтных настройках Push
+     */
+    public function testDefaultPushSettingsHasPriority(): void
+    {
+        $defaults = $this->message->getPushSettings();
+        $this->assertArrayHasKey('priority', $defaults);
+    }
+
+    /**
+     * @тест наличия ключа ttl в дефолтных настройках Push
+     */
+    public function testDefaultPushSettingsHasTtl(): void
+    {
+        $defaults = $this->message->getPushSettings();
+        $this->assertArrayHasKey('ttl', $defaults);
+    }
+
+    /**
+     * @тест установки настроек Push
+     */
+    public function testSetPushSettings(): void
+    {
+        $this->message->setPushSettings(['priority' => 'high', 'ttl' => 10]);
+        $this->assertTrue(true); 
+    }
+
+    /**
+     * @тест получения установленных настроек Push
+     */
+    public function testGetSetPushSettings(): void
+    {
         $this->message->setPushSettings(['priority' => 'high', 'ttl' => 10]);
         $settings = $this->message->getPushSettings();
         $this->assertEquals('high', $settings['priority']);
