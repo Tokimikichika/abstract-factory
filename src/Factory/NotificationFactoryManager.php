@@ -2,8 +2,10 @@
 
 namespace Tokimikichika\AbstractFactory\Factory;
 
+use Tokimikichika\AbstractFactory\Component\NotificationComponent;
 use Tokimikichika\AbstractFactory\Exception\FactoryNotFoundException;
 use Tokimikichika\AbstractFactory\Exception\InvalidChannelException;
+use Tokimikichika\AbstractFactory\Interface\NotificationComponentInterface;
 use Tokimikichika\AbstractFactory\Interface\NotificationFactoryInterface;
 
 /**
@@ -69,19 +71,19 @@ class NotificationFactoryManager
     }
 
     /**
-     * Создать компоненты уведомлений
+     * Создать компонент уведомления
      * @param string $channel Канал
-     * @return array<string, mixed> Компоненты уведомлений
+     * @return NotificationComponentInterface Компонент уведомления
      */
-    public function createNotificationComponents(string $channel): array
+    public function createNotificationComponent(string $channel): NotificationComponentInterface
     {
         $factory = $this->getFactory($channel);
 
-        return [
-            'channel' => $factory->getChannelName(),
-            'message' => $factory->createMessage(),
-            'sender' => $factory->createSender(),
-            'delivery' => $factory->createDelivery(),
-        ];
+        return new NotificationComponent(
+            $factory->getChannelName(),
+            $factory->createMessage(),
+            $factory->createSender(),
+            $factory->createDelivery()
+        );
     }
 }
