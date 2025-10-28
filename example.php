@@ -9,44 +9,38 @@ echo "=== Система уведомлений ===\n\n";
 
 $manager = new NotificationFactoryManager();
 
-// Демонстрация для разных каналов уведомлений
 $channels = ['email', 'sms', 'push'];
 
 foreach ($channels as $channel) {
     echo "--- Канал: " . strtoupper($channel) . " ---\n";
     
     try {
-        $components = $manager->createNotificationComponents($channel);
-        
-        // Настройка компонентов
-        $components['message']->setRecipient('user@example.com');
-        $components['message']->setSubject('Тестовое уведомление');
-        $components['message']->setContent('Это тестовое сообщение для демонстрации системы уведомлений');
-        
-        $components['sender']->setName('Система уведомлений');
-        
-        // Отправка уведомления
-        echo "Отправка уведомления через {$components['channel']}:\n";
-        $components['message']->send();
-        
-        // Отправка через отправителя
-        $components['sender']->send(
-            $components['message']->getRecipient(),
-            $components['message']->getSubject(),
-            $components['message']->getContent()
+        $component = $manager->createNotificationComponent($channel);
+
+        $component->getMessage()->setRecipient('user@example.com');
+        $component->getMessage()->setSubject('Тестовое уведомление');
+        $component->getMessage()->setContent('Это тестовое сообщение для демонстрации системы уведомлений');
+
+        $component->getSender()->setName('Система уведомлений');
+
+        echo "Отправка уведомления через {$component->getChannel()}:\n";
+        $component->send();
+
+        $component->getSender()->send(
+            $component->getMessage()->getRecipient(),
+            $component->getMessage()->getSubject(),
+            $component->getMessage()->getContent()
         );
-        
-        // Доставка через систему доставки
-        $components['delivery']->deliver(
-            $components['message']->getRecipient(),
-            $components['message']->getSubject(),
-            $components['message']->getContent()
+
+        $component->getDelivery()->deliver(
+            $component->getMessage()->getRecipient(),
+            $component->getMessage()->getSubject(),
+            $component->getMessage()->getContent()
         );
-        
-        // Статистика доставки
-        $stats = $components['delivery']->getDeliveryStats();
+
+        $stats = $component->getDelivery()->getDeliveryStats();
         echo "Статистика доставки: " . json_encode($stats) . "\n\n";
-        
+
     } catch (Exception $e) {
         echo "Ошибка: " . $e->getMessage() . "\n";
     }
@@ -54,5 +48,4 @@ foreach ($channels as $channel) {
     echo str_repeat("-", 50) . "\n\n";
 }
 
-// Демонстрация доступных каналов
 echo "Доступные каналы: " . implode(', ', $manager->getAvailableChannels()) . "\n";
